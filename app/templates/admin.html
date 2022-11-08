@@ -1,0 +1,52 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>test</title>
+    <script src="{{ url_for('static', filename='js/jquery.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/sockets.js') }}"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+</head>
+<body>
+    <h1>Nothing here</h1>
+</body>
+<script>
+
+    const audio_path = '{{ url_for("static", filename="sounds/noti.wav") }}';
+
+    function notify(){
+        Swal.fire({
+            title: 'New Order!',
+            icon: 'info',
+            didOpen: function () {
+                const audio = new Audio(audio_path);
+                audio.autoplay = true;
+                audio.play();
+            }
+        })
+        return true;
+    }
+
+    $(document).ready(function(){
+        var socket = io.connect('http://localhost:5000');
+
+        socket.on('ord_updates', function(msg){
+            console.log(msg);
+            // var msg = JSON.parse(msg);
+            notify();
+            $("body").append(
+                `<p>order 1</p><button class="accept" id="${msg.table_id}">accept</button>`
+            )
+        });
+        
+        $("body").on('click', '.accept', function(){
+            alert('clicked');
+            var table_id = $(this).attr('id');
+            console.log(table_id);
+            socket.emit('order received' ,{table_id:table_id});
+        })
+    });
+
+</script>
+</html>

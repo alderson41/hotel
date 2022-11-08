@@ -1,0 +1,76 @@
+{% extends "layout.html" %}
+{% block content %}
+
+<div class="page-content">
+	<div class="holder breadcrumbs-wrap mt-0">
+	<div class="container">
+		<ul class="breadcrumbs">
+			<li><a href="index.html">Home</a></li>
+			<li><span>Orders</span></li>
+		</ul>
+	</div>
+</div>
+	<div class="holder">
+	<div class="container">
+		<div class="row">
+			<div class="col-md-14 aside">
+			<h1 class="mb-3">Order History</h1>
+				<div class="table-responsive">
+					<table class="table table-bordered table-striped table-order-history">
+						<thead>
+						<tr>
+							<th scope="col"># </th>
+							<th scope="col">Order Number</th>
+							<th scope="col">Ordered On</th>
+							<th scope="col">Status</th>
+							<th scope="col">Total Price</th>
+							<th scope="col"></th>
+						</tr>
+						</thead>
+						<tbody>
+						</tbody>
+					</table>
+			</div>
+		</div>
+	</div>
+</div>
+</div>
+
+{% endblock content %}
+
+{% block scripts %}
+
+<script>
+    var orders = JSON.parse(window.localStorage.getItem('ordered')).data;
+
+    $(document).ready(function(){
+
+        for(i=0;i<orders.length;i++){
+            var html_tag = `
+            <tr class="${orders[i].order_id}">
+                <td>${i+1}</td>
+                <td><b>${orders[i].order_id}</b> <a href="#" class="ml-1">View Details</a></td>
+                <td>${orders[i].ordered_on}</td>
+                <td class="order_status_${orders[i].order_id}">${orders[i].order_status}</td>
+                <td><span class="color">₹ ${orders[i].total}</span></td>
+                <td><a href="#" class="btn btn--grey btn--sm">REORDER</a></td>
+            </tr>
+            `
+            $("tbody").append(html_tag);
+        }
+
+		socket.on('foodupdate', function(data){
+			console.log('yeah');
+			Swal.fire({
+					title:"order "+data.status,
+					text: data.message,
+					icon:data.icon,
+				})
+			$(".order_status_"+data.order_id).text(data.status=='accepted' ? 'Preparing': 'Canceled');
+		})
+        
+    })
+
+</script>
+</html>
+{% endblock scripts %}

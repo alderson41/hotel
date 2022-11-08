@@ -1,0 +1,172 @@
+{% extends "layout.html" %}
+{% block content %}
+
+<div class="page-content">
+	<div class="holder breadcrumbs-wrap mt-0">
+	<div class="container">
+		<ul class="breadcrumbs">
+			<li><a href="{{ url_for('user.index') }}">Home</a></li>
+			<li><span>Cart</span></li>
+		</ul>
+	</div>
+</div>
+	<div class="holder">
+        <div class="food-items container">
+                <h1 class="text-center">Food Basket</h1>
+                <div class="cart-table">
+            <div class="cart-table-prd cart-table-prd--head py-1 d-none d-md-flex">
+                <div class="cart-table-prd-image text-center">
+                    Image
+                </div>
+                <div class="cart-table-prd-content-wrap">
+                    <div class="cart-table-prd-info">Name</div>
+                    <div class="cart-table-prd-qty">Qty</div>
+                    <div class="cart-table-prd-price">Price</div>
+                    <div class="cart-table-prd-action">&nbsp;</div>
+                </div>
+            </div>
+        </div>
+    </div>
+		<div class="text-center mt-1"><button class="btn btn--grey respond-btn">Respond</button></div>
+{% endblock content %}
+
+{% block scripts %}
+
+<script>
+
+    var socket = io.connect('http://localhost:5000');
+    socket.emit('join', {table_id:window.localStorage.getItem('table_id')});
+    var mfood = JSON.parse(window.localStorage.getItem('cook_data'));
+    var foods = mfood.data;
+    var food_item = foods.inqueue;
+    var order_id = parseInt(window.location.pathname.split('/')[2])
+
+    var ref = new URL(window.location.href).searchParams.get('ref');
+
+    $(document).ready(function(){
+
+        function getObject(order_id){
+            var obj = null;
+            console.log(ref);
+            if (ref == null){
+                obj = mfood.data.inqueue.find(o => o.order_id === order_id);
+            } else if (ref == 'completed'){
+                obj = mfood.data.completed.find(o => o.order_id === order_id);
+                $("button.respond-btn").removeClass('respond-btn').addClass('no-response-btn').text('Go Back').on('click', function(){
+                    window.history.back();
+                })
+            } else if (ref == 'preparing'){
+                obj = mfood.data.preparing.find(o => o.order_id === order_id);
+            }
+            console.log(order_id);
+            return obj
+        }
+
+        function deleteObject(order_id){
+            mfood.data.inqueue = mfood.data.inqueue.filter(obj => obj.order_id != order_id);
+            console.log(mfood.data.inqueue);
+            return true;
+        }
+
+        var food_items = getObject(order_id);
+
+        function updateFoodStatus(status){
+            var msg = null;
+            var icon = null;
+            if (status == 'accepted'){
+                msg = 'Your order has been accepted and is being prepared.';
+                icon = 'success';
+            } else if (status=='denied'){
+                msg = 'Your order has been canceled by cook';
+                icon = 'error';
+            }
+            socket.emit('foodstatus', {message:msg, status:status, icon:icon, table_id:food_items.table_id, order_id:order_id});
+        }
+
+        for (i=0; i<food_items.cart_items.length; i++){
+            var cur_item = food_items.cart_items[i];
+            var html_tag = `
+            <div class="cart-table-prd">
+                <div class="cart-table-prd-image">
+                    <a href="#" class="prd-img"><img class="lazyload fade-up" src="" data-src="${cur_item.data.food_img}" alt=""></a>
+                </div>
+                <div class="cart-table-prd-content-wrap">
+                    <div class="cart-table-prd-info">
+                        <div class="cart-table-prd-price">
+                            <div class="price-new">₹ ${cur_item.data.price}</div>
+                        </div>
+                        <h2 class="cart-table-prd-name"><a href="#">${cur_item.data.food_name}</a></h2>
+                    </div>
+                    <div class="cart-table-prd-qty">
+                        <div class="qty qty-changer">
+                            <button class="decrease"></button>
+                            <input type="text" class="qty-input" disabled value="${cur_item.data.quantity}" id="${cur_item.food_id}" data-min="0" data-max="1000">
+                            <button class="increase"></button>
+                        </div>
+                    </div>
+                    <div class="cart-table-prd-price-total total-price">
+                        ₹ ${cur_item.data.price*cur_item.data.quantity}
+                    </div>
+                </div>
+                <div class="cart-table-prd-action">
+                    <a href="#" class="cart-table-prd-remove" data-tooltip="Remove Product"><i class="icon-recycle"></i></a>
+                </div>
+            </div>`
+            $(".food-items").append(html_tag);
+        }
+
+        $(".respond-btn").on('click', function(){
+            Swal.fire({
+                icon: 'question',
+                title: 'Respond to order',
+                showConfirmButton: true,
+                showDenyButton: true,
+                showCancelButton: true,
+                confirmButtonText: 'Accept',
+                denyButtonText: 'Reject'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    var food_obj = getObject(order_id);
+                    food_obj.accepted_by = window.localStorage.cook;
+                    food_obj.order_status = 'preparing';
+                    food_obj.accepted_on = new Date().toLocaleTimeString('en-US', { hour12: true, hour: "numeric", minute: "numeric"});
+                    mfood.data.preparing.push(food_obj);
+                    deleteObject(order_id);
+                    updateFoodStatus('accepted');
+                    window.localStorage.setItem('cook_data', JSON.stringify(mfood));
+                    Swal.fire('Order Accepted', '', 'success')
+                    window.location=document.referrer;
+                } else if (result.isDenied) {
+                    var food_obj = getObject(order_id);
+                    food_obj.accepted_by = window.localStorage.cook;
+                    food_obj.order_status = 'rejected';
+                    food_obj.accepted_on = new Date().toLocaleTimeString('en-US', { hour12: true, hour: "numeric", minute: "numeric"});
+                    mfood.data.completed.push(food_obj);
+                    deleteObject(order_id);
+                    updateFoodStatus('denied');
+                    window.localStorage.setItem('cook_data', JSON.stringify(mfood));
+                    Swal.fire('Order Canceled', '', 'info')
+                    window.location=document.referrer;
+                }
+            })
+        })
+        
+    // when cook accepts order update the user.
+    socket.on('order update', function(msg){
+        const audio_path = '{{ url_for("static", filename="sounds/order_received.wav") }}';
+        Swal.fire({
+            title: 'Order accepted',
+            text: 'Your order #123 is being prepared. Please wait',
+            icon: 'success',
+            didOpen: function () {
+                const audio = new Audio(audio_path);
+                audio.autoplay = true;
+                audio.play();
+            }
+        })
+    })
+})
+
+</script>
+</html>
+{% endblock scripts %}

@@ -1,0 +1,49 @@
+{% extends "layout.html" %}
+{% block content %}
+<div class="page-content">
+	<div class="holder breadcrumbs-wrap mt-0">
+	<div class="container">
+		<ul class="breadcrumbs">
+			<li><a href="index.html">Home</a></li>
+			<li><span>Past Orders</span></li>
+		</ul>
+	</div>
+</div>
+	<div class="holder">
+	<div class="container">
+		<div class="row">
+			<div class="col-md-14 aside">
+			<h1 class="mb-3">Order History</h1>
+				<div class="table-responsive">
+					<table class="table table-bordered table-striped table-order-history">
+						<thead>
+						<tr>
+							<th scope="col"># </th>
+							<th scope="col">Order Number</th>
+							<th scope="col">Ordered On</th>
+							<th scope="col">Status</th>
+							<th scope="col">Total Price</th>
+							<th scope="col"></th>
+						</tr>
+						</thead>
+						<tbody>
+							{% for order in orders %}
+								<tr>
+									<td>{{ loop.index }}</td>
+									<td><b>{{ order.id }}</b> <a href="{{ url_for('user.order_details', order_id=order.id) }}" class="ml-1">View Details</a></td>
+									<td>{{ order.ordered_on.strftime("%d.%m.%Y") }}</td>
+									<td>{{ order.order_data['order_status'] }}</td>
+									<td><span class="color">₹ {{ order.order_data['total'] }}</span></td>
+									<td><a href="#" class="btn btn--grey btn--sm">REORDER</a></td>
+								</tr>
+							{% endfor %}
+						</tbody>
+					</table>
+			</div>
+		</div>
+	</div>
+</div>
+</div>
+
+</html>
+{% endblock content %}

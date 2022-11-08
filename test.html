@@ -1,0 +1,225 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test</title>
+</head>
+
+<style>
+    .top {
+        margin: 0px 2px 10px;
+        text-align: center;
+        border: 3px solid black;
+        border-radius: 5px;
+    }
+
+    p{
+        margin: 0;
+    }
+
+    .col {
+        float: left;
+        width: 32%;
+        padding: 3px;
+        margin: 0px 4px;
+        border: 3px solid black;
+        height: 85%;
+        overflow-y: auto;
+        border-radius: 5px;
+    }
+
+    .heading{
+        text-align: center;
+        background: black;
+        color: white;
+        font-size: 24px;
+        font-weight: bold;
+        margin-bottom: 2%;
+        padding: 5px;
+        border-radius: 3px;
+    }
+
+    .obj-card{
+        margin: 1%;
+        padding: 3px;
+        border: 2px solid black;
+        border-radius: 3px;
+        overflow: hidden;
+    }
+
+    .ord-col {
+        width: 48%;
+        float: left;
+        text-align: center;     
+    }
+
+    .ord-num {
+        text-align: center;
+        color: crimson;
+        font-size: 18px;
+        font-weight: bold;
+        text-decoration: underline;
+        padding: 5px;
+        margin-bottom: 3px;
+    }
+
+    .view-ord-btn {
+        width: 90%;
+        padding: 8px;
+        margin: 2% 5% 1%;
+        font-weight: bolder;
+        font-size: 16px;
+        border-radius: 5px;
+    }
+
+    span {
+        font-weight: bold;
+    }
+
+    .ord-completed{
+        background: green;
+        color: white;
+    } 
+    
+    .ord-rejected {
+        background: red;
+        color: white;
+    }
+
+    .status-btn {
+        padding: 8px;
+        margin: 2% 4.2% 1%;
+        font-weight: bolder;
+        font-size: 16px;
+        width: 41%;
+        border-radius: 5px;
+    }
+
+</style>
+
+<body>
+    <div class="container">
+        
+        <div class="top">
+            <h1 class="main-text">Order Management System</h1>
+        </div>
+
+        <!-- Preparing -->
+        <div class="col preparing">
+            <p class="heading">Preparing</p>
+
+            <div class="obj-card">
+                <p class="ord-num">Order#66</p>
+                <div class="ord-col">
+                    <p class="ord-details"><span>Order By:</span> Table#7<br><span>Total Items:</span> 7<br><span>Order Price:</span> 700₹</p>
+                </div>
+                <div class="ord-col">
+                    <p class="ord-prep"><span>Order Accepted By</span><br> Anirudh M P<br>@10:36 AM</p>
+                    
+                </div>
+                <button class="view-ord-btn" type="button">View Order</button>
+            </div>
+
+            <div class="obj-card">
+                <p class="ord-num">Order#66</p>
+                <div class="ord-col">
+                    <p class="ord-details"><span>Order By:</span> Table#7<br><span>Total Items:</span> 7<br><span>Order Price:</span> 700₹</p>
+                </div>
+                <div class="ord-col">
+                    <p class="ord-prep"><span>Order Accepted By</span><br> Anirudh M P<br>@10:36 AM</p>
+                    
+                </div>
+                <button class="view-ord-btn" type="button">View Order</button>
+            </div>
+
+            <div class="obj-card">
+                <p class="ord-num">Order#66</p>
+                <div class="ord-col">
+                    <p class="ord-details"><span>Order By:</span> Table#7<br><span>Total Items:</span> 7<br><span>Order Price:</span> 700₹</p>
+                </div>
+                <div class="ord-col">
+                    <p class="ord-prep"><span>Order Accepted By</span><br> Anirudh M P<br>@10:36 AM</p>
+                    
+                </div>
+                <button class="view-ord-btn" type="button">View Order</button>
+            </div>
+
+            <div class="obj-card">
+                <p class="ord-num">Order#66</p>
+                <div class="ord-col">
+                    <p class="ord-details"><span>Order By:</span> Table#7<br><span>Total Items:</span> 7<br><span>Order Price:</span> 700₹</p>
+                </div>
+                <div class="ord-col">
+                    <p class="ord-prep"><span>Order Accepted By</span><br> Anirudh M P<br>@10:36 AM</p>
+                    
+                </div>
+                <button class="view-ord-btn" type="button">View Order</button>
+            </div>
+
+        </div>
+
+        <!-- preparing column -->
+        <div class="col new-orders">
+            <p class="heading">New Orders</p>
+
+            <div class="obj-card">
+                <p class="ord-num">Order#66</p>
+                <div class="ord-col">
+                    <p class="ord-details"><span>Order By:</span> Table#7<br><span>Total Items:</span> 7<br><span>Order Price:</span> 700₹</p>
+                </div>
+                <div class="ord-col">
+                    <p class="ord-prep"><span>Ordered On: </span>10:36 AM</p>
+                    
+                </div>
+                <button class="view-ord-btn" type="button">View Order</button>
+            </div>
+
+            <div class="obj-card">
+                <p class="ord-num">Order#66</p>
+                <div class="ord-col">
+                    <p class="ord-details"><span>Order By:</span> Table#7<br><span>Total Items:</span> 7<br><span>Order Price:</span> 700₹</p>
+                </div>
+                <div class="ord-col">
+                    <p class="ord-prep"><span>Ordered On: </span>10:36 AM</p>
+                    
+                </div>
+                <button class="view-ord-btn" type="button">View Order</button>
+            </div>
+
+        </div>
+
+        <!-- completed column -->
+        <div class="col completed">
+            <p class="heading">Completed</p>
+
+            <div class="obj-card">
+                <p class="ord-num">Order#66</p>
+                <div class="ord-col">
+                    <p class="ord-details"><span>Order By:</span> Table#7<br><span>Total Items:</span> 7<br><span>Order Price:</span> 700₹</p>
+                </div>
+                <div class="ord-col">
+                    <p class="ord-prep"><span>Order Completed By</span><br> Anirudh M P<br>@10:36 AM</p>
+                    
+                </div>
+                <button class="status-btn" type="button">View Order</button>
+                <button class="status-btn ord-completed" type="button" disabled>Completed</button>
+            </div>
+
+            <div class="obj-card">
+                <p class="ord-num">Order#66</p>
+                <div class="ord-col">
+                    <p class="ord-details"><span>Order By:</span> Table#7<br><span>Total Items:</span> 7<br><span>Order Price:</span> 700₹</p>
+                </div>
+                <div class="ord-col">
+                    <p class="ord-prep"><span>Order Completed By</span><br> Anirudh M P<br>@10:36 AM</p>
+                    
+                </div>
+                <button class="status-btn" type="button">View Order</button>
+                <button class="status-btn ord-rejected" type="button" disabled>Rejected</button>
+            </div>
+
+        </div>
+    </div>
+</body>
+</html>

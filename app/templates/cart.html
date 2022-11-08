@@ -1,0 +1,211 @@
+{% extends "layout.html" %}
+{% block content %}
+
+<div class="page-content">
+	<div class="holder breadcrumbs-wrap mt-0">
+	<div class="container">
+		<ul class="breadcrumbs">
+			<li><a href="index.html">Home</a></li>
+			<li><span>Cart</span></li>
+		</ul>
+	</div>
+</div>
+	<div class="holder">
+        <div class="food-items container">
+                <h1 class="text-center">Food Basket</h1>
+                <div class="cart-table">
+            <div class="cart-table-prd cart-table-prd--head py-1 d-none d-md-flex">
+                <div class="cart-table-prd-image text-center">
+                    Image
+                </div>
+                <div class="cart-table-prd-content-wrap">
+                    <div class="cart-table-prd-info">Name</div>
+                    <div class="cart-table-prd-qty">Qty</div>
+                    <div class="cart-table-prd-price">Price</div>
+                    <div class="cart-table-prd-action">&nbsp;</div>
+                </div>
+            </div>
+        </div>
+    </div>
+		<div class="text-center mt-1"><button class="btn btn--grey order-btn">order Now</button></div>
+{% endblock content %}
+
+{% block scripts %}
+
+<script>
+    var food_items = JSON.parse(window.localStorage.getItem('cart'));
+
+    var old_orders = JSON.parse(window.localStorage.getItem('ordered'));
+
+    function getObject(food_id){
+        let obj = food_items.cart_items.find(o => o.food_id === food_id);
+        return obj
+    }
+
+    function updateObject(food_id, qty){
+        food_items.cart_items.find((obj, pos) => {
+            if (obj.food_id === food_id){
+                food_items.cart_items[pos].data.quantity = qty;
+                window.localStorage.setItem('cart', JSON.stringify(food_items));
+                return true;
+            }
+        })
+    }
+
+    function deleteObject(food_id){
+        food_items = food_items.cart_items.filter(obj => obj.food_id != food_id);
+        window.localStorage.setItem('cart', JSON.stringify({"cart_items":food_items}));
+        return true;
+    }
+
+    $(document).ready(function(){
+        var total = 0;
+        var item_counts = 0;
+
+        if (JSON.parse(window.localStorage.getItem('cart')).cart_items.length < 1){
+            var html_tag = `
+            <div class="holder mt-0">
+                <div class="container">
+                    <div class="page404-bg">
+                        <div class="page404-text">
+                            <div class="txt2">Your shopping cart is empty!</div>
+                            <div class="add-food" style="margin-top: 3%">
+                                Don't worry, you can add 🍚 🥗 from <a href="{{ url_for('user.index') }}" style="color:#17c6aa;text-decoration:underline;">here</a>.
+                            </div>
+                        </div>
+                        
+                    </div>
+                </div>
+            </div>
+            `
+            $(".holder").remove();
+            $(".page-content").remove();
+            $("body").append(html_tag);
+        } 
+        else{
+            for (i=0; i<food_items.cart_items.length; i++){
+                var cur_item = food_items.cart_items[i];
+                var html_tag = `
+                <div class="cart-table-prd">
+                    <div class="cart-table-prd-image">
+                        <a href="#" class="prd-img"><img class="lazyload fade-up" src="" data-src="${cur_item.data.food_img}" alt=""></a>
+                    </div>
+                    <div class="cart-table-prd-content-wrap">
+                        <div class="cart-table-prd-info">
+                            <div class="cart-table-prd-price">
+                                <div class="price-new">₹ ${cur_item.data.price}</div>
+                            </div>
+                            <h2 class="cart-table-prd-name"><a href="#">${cur_item.data.food_name}</a></h2>
+                        </div>
+                        <div class="cart-table-prd-qty">
+                            <div class="qty qty-changer">
+                                <button class="decrease"></button>
+                                <input type="text" class="qty-input" value="${cur_item.data.quantity}" id="${cur_item.food_id}" data-min="0" data-max="1000">
+                                <button class="increase"></button>
+                            </div>
+                        </div>
+                        <div class="cart-table-prd-price-total total-price">
+                            ₹ ${cur_item.data.price*cur_item.data.quantity}
+                        </div>
+                    </div>
+                    <div class="cart-table-prd-action">
+                        <a href="#" class="cart-table-prd-remove" data-tooltip="Remove Product"><i class="icon-recycle"></i></a>
+                    </div>
+                </div>`
+                $(".food-items").append(html_tag);
+                total = total+(cur_item.data.price*cur_item.data.quantity);
+                item_counts = item_counts+parseInt(cur_item.data.quantity);
+            }
+        }
+
+        $(".increase, .decrease").on('click', function(){
+            var $idu = $(this);
+            var qty = $idu.closest('div').find('.qty-input')[0];
+            var per_item_price = $idu.parentsUntil('div.cart-table-prd').find('.price-new')[0].innerText;
+            var food_id = qty.id;
+            // update total price too
+
+            if ($idu.is('.increase')){
+                qty.value = parseInt(qty.value)+1;
+                total = total+parseInt(per_item_price.split(' ')[1]);
+                item_counts = item_counts+1;
+            } else{
+                if (parseInt(qty.value) > 0){
+                    qty.value = parseInt(qty.value)-1;
+                    total = total-parseInt(per_item_price.split(' ')[1]);
+                    item_counts = item_counts-1;
+                }
+            }
+            // update total price or item
+            $idu.parentsUntil('div.cart-table-prd').find('.total-price')[0].innerText = '₹ ' + qty.value*parseInt(per_item_price.split(' ')[1]);
+            
+            updateObject(food_id, qty.value);
+        })
+
+        $(".cart-table-prd-remove").on('click', function(){
+            var obj = $(this).parent().parent().find('.qty-input')[0];
+            var food_id = obj.id;
+            var per_item_price = $(this).parent().parent().find('.price-new')[0].innerText;
+            deleteObject(food_id);
+            $(this).parent().parent()[0].remove();
+            total=total-(parseInt(per_item_price.split(' ')[1])*parseInt(obj.value));
+            item_counts = item_counts-parseInt(obj.value);
+        })
+
+        $(".order-btn").on('click', function(){
+            Swal.fire({
+                title: 'Order Now?',
+                text: `Ordering ${item_counts} items worth ₹ ${total}.`,
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Lets, do it.'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    Swal.fire(
+                    'Order Placed',
+                    'Your order has been placed. We will let you know when chef starts preparing your order.',
+                    'success'
+                    );
+                    food_items.ordered_on = new Date().toLocaleDateString('in').replaceAll('/','.');
+                    food_items.order_status = 'ordered';
+                    food_items.total = total;
+                    old_orders.data.push(food_items);
+                    window.localStorage.setItem('ordered', JSON.stringify(old_orders));
+                    window.localStorage.setItem('cart', JSON.stringify({"cart_items":[], "table_id":null, "order_id":null, "ordered_on": null, "order_status":null, "total":null}));
+                    socket.emit('update', food_items);
+                    
+                }
+            })
+        })
+    })
+
+    socket.on('foodupdate', function(data){
+			console.log('yeah');
+			Swal.fire({
+					title:"order "+data.status,
+					text: data.message,
+					icon:data.icon,
+				})
+			$(".order_status_"+data.order_id).text(data.status=='accepted' ? 'Preparing': 'Canceled');
+		})
+
+    // when cook accepts order update the user.
+    socket.on('order update', function(msg){
+        const audio_path = '{{ url_for("static", filename="sounds/order_received.wav") }}';
+        Swal.fire({
+            title: 'Order accepted',
+            text: 'Your order #123 is being prepared. Please wait',
+            icon: 'success',
+            didOpen: function () {
+                const audio = new Audio(audio_path);
+                audio.autoplay = true;
+                audio.play();
+            }
+        })
+    })
+
+</script>
+</html>
+{% endblock scripts %}

@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1">
+	<meta name="description" content="">
+	<meta name="author" content="">
+    {% if title %}
+        <title>{{ title }}</title>
+    {% else %}
+	    <title>Anirudh M P</title>
+    {% endif %}
+	<link rel="shortcut icon" type="image/x-icon" href="{{ url_for('static', filename='images/favicon.ico') }}" />
+
+	<link href="{{ url_for('static', filename='css/vendor/bootstrap.min.css') }}" rel="stylesheet">
+	<link href="{{ url_for('static', filename='css/vendor/vendor.min.css') }}" rel="stylesheet">
+
+	<link href="{{ url_for('static', filename='css/style.css') }}" rel="stylesheet">
+
+	<link href="{{ url_for('static', filename='fonts/icomoon/icons.css') }}" rel="stylesheet">
+	<link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,300;1,400;1,500;1,600;1,700;1,800&display=swap" rel="stylesheet">
+	<link href="https://fonts.googleapis.com/css2?family=Open%20Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="{{ url_for('static', filename='js/jquery.js') }}"></script>
+	<script src="{{ url_for('static', filename='js/main.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/sockets.js') }}"></script>
+</head>
+
+<body class="has-smround-btns has-loader-bg equal-height">
+<header class="hdr-wrap">
+	<div class="hdr-content hdr-content-sticky">
+		<div class="container">
+			<div class="row">
+				<div class="col-auto show-mobile">
+					<!-- Menu Toggle -->
+<div class="menu-toggle"> <a href="#" class="mobilemenu-toggle"><i class="icon-menu"></i></a> </div>
+<!-- /Menu Toggle -->
+				</div>
+				<div class="col-auto hdr-logo">
+					<a href="index.html" class="logo"><img srcset="images/skins/fashion/logo.png 1x, images/skins/fashion/logo2x.png 2x" alt="Logo"></a>
+				</div>
+				<!--navigation-->
+				<div class="hdr-nav hide-mobile nav-holder-s">
+				</div>
+				<!--//navigation-->
+				<div class="hdr-links-wrap col-auto ml-auto">
+					<div class="hdr-inline-link">
+						<!-- Header Search -->
+<div class="search_container_desktop">
+	<div class="dropdn dropdn_search dropdn_fullwidth">
+		<a href="#" class="dropdn-link  js-dropdn-link only-icon"><i class="icon-search"></i><span class="dropdn-link-txt">Search</span></a>
+		<div class="dropdn-content">
+			<div class="container">
+				<form method="get" action="#" class="search search-off-popular">
+					<input name="search" type="text" class="search-input input-empty" placeholder="What are you looking for?">
+					<button type="submit" class="search-button"><i class="icon-search"></i></button>
+					<a href="#" class="search-close js-dropdn-close"><i class="icon-close-thin"></i></a>
+				</form>
+			</div>
+		</div>
+	</div>
+</div>
+<!-- /Header Search -->
+
+</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="hdr">
+		<div class="hdr-topline hdr-topline--dark js-hdr-top">
+			<div class="container">
+				<div class="row flex-nowrap">
+					<div class="col hdr-topline-left hide-mobile">
+
+							<div class="hdr_container_desktop">
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="hdr-content">
+			<div class="container">
+				<div class="row">
+					<div class="col-auto show-mobile">
+						<!-- Menu Toggle -->
+<div class="menu-toggle"> <a href="#" class="mobilemenu-toggle"><i class="icon-menu"></i></a> </div>
+<!-- /Menu Toggle -->
+					</div>
+					<div class="col-auto hdr-logo">
+						<a href="#" class="logo"><img srcset="images/skins/fashion/logo.png 1x, images/skins/fashion/logo2x.png 2x" alt="Logo"></a>
+					</div>
+					<!--navigation-->
+					<div class="hdr-nav hide-mobile nav-holder justify-content-center px-4">
+						<!--mmenu-->
+<ul class="mmenu mmenu-js">
+	<li class="mmenu-item--simple"><a href="{{ url_for('user.index') }}" class="active">Home</a></li>
+	<li class="mmenu-item--simple"><a href="#">Menu</a>
+		<div class="mmenu-submenu">
+			<ul class="submenu-list">
+				{% for category in categories %}
+					<li><a href="#">{{ category.category_name }}</a></li>
+				{% endfor %}
+            </ul>
+		</div>
+	</li>
+	<li><a href="{{ url_for('user.cart') }}">Cart</a></li>
+	<li class="mmenu-item--mega"><a href="{{ url_for('user.orders') }}">Orders</a></li>
+	<li class="mmenu-item--mega"><a href="{{ url_for('user.history') }}">Past Orders</a>
+	</li>
+</ul>
+					</div>
+					<div class="hdr-links-wrap col-auto ml-auto">
+						<div class="hdr-inline-link">
+							<!-- Header Search -->
+<div class="search_container_desktop">
+	<div class="dropdn dropdn_search dropdn_fullwidth">
+		<a href="#" class="dropdn-link  js-dropdn-link only-icon"><i class="icon-search"></i><span class="dropdn-link-txt">Search</span></a>
+		<div class="dropdn-content">
+			<div class="container">
+				<form method="get" action="#" class="search search-off-popular">
+					<input name="search" type="text" class="search-input input-empty" placeholder="What are you looking for?">
+					<button type="submit" class="search-button"><i class="icon-search"></i></button>
+					<a href="#" class="search-close js-dropdn-close"><i class="icon-close-thin"></i></a>
+				</form>
+			</div>
+		</div>
+	</div>
+</div>
+
+							<div class="hdr_container_mobile show-mobile">
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</header>
+<div class="header-side-panel">
+	<!-- Mobile Menu -->
+<div class="mobilemenu js-push-mbmenu">
+	<div class="mobilemenu-content">
+		<div class="mobilemenu-close mobilemenu-toggle">Close</div>
+		<div class="mobilemenu-scroll">
+			<div class="mobilemenu-search"></div>
+			<div class="nav-wrapper show-menu">
+				<div class="nav-toggle">
+					<span class="nav-back"><i class="icon-angle-left"></i></span>
+					<span class="nav-title"></span>
+					<a href="#" class="nav-viewall">view all</a>
+				</div>
+				<ul class="nav nav-level-1">
+					<li><a href="#">Home<span class="arrow"><i class="icon-angle-right"></i></span></a></li>
+					<li><a href="#">Menu<span class="arrow"><i class="icon-angle-right"></i></span></a>
+						<ul class="nav-level-2">
+							{% for category in categories %}
+								<li><a href="#">{{ category.category_name }}</a></li>
+							{% endfor %}
+						</ul>
+					</li>
+					<li><a href="{{ url_for('user.cart') }}">Cart<span class="arrow"><i class="icon-angle-right"></i></span></a></li>
+					<li><a href="#">Orders<span class="arrow"><i class="icon-angle-right"></i></span></a></li>
+					<li><a href="{{ url_for('user.history') }}">Past Orders<span class="arrow"><i class="icon-angle-right"></i></span></a></li>
+				</ul>
+			</div>
+			<div class="mobilemenu-bottom">
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+{% block content %}
+{% endblock content %}
+    <script src="{{ url_for('static', filename='js/vendor-special/lazysizes.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/vendor-special/ls.bgset.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/vendor-special/ls.aspectratio.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/vendor-special/jquery.ez-plus.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/vendor-special/instafeed.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/vendor/vendor.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/app-html.js') }}"></script>
+</body>
+
+<script>
+	socket = io.connect('http://localhost:5000');
+	socket.emit('join', {table_id:window.localStorage.getItem('table_id')});
+</script>
+{% block scripts %}
+{% endblock scripts %}

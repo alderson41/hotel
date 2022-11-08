@@ -1,0 +1,135 @@
+{% extends "layout.html" %}
+{% block content %}
+
+<div class="page-content">
+	<div class="holder breadcrumbs-wrap mt-0">
+	<div class="container">
+		<ul class="breadcrumbs">
+			<li><a href="index.html">Home</a></li>
+			<li><span>Order Details</span></li>
+		</ul>
+	</div>
+</div>
+	<div class="holder">
+        <div class="food-items container">
+                <h1 class="text-center">Food Basket</h1>
+                <div class="cart-table">
+            <div class="cart-table-prd cart-table-prd--head py-1 d-none d-md-flex">
+                <div class="cart-table-prd-image text-center">
+                    Image
+                </div>
+                <div class="cart-table-prd-content-wrap">
+                    <div class="cart-table-prd-info">Name</div>
+                    <div class="cart-table-prd-qty">Qty</div>
+                    <div class="cart-table-prd-price">Price</div>
+                    <div class="cart-table-prd-action">&nbsp;</div>
+                </div>
+            </div>
+            {% for item in order['order_data']['cart_items'] %}
+                <div class="cart-table-prd">
+                    <div class="cart-table-prd-image">
+                        <a href="#" class="prd-img"><img class="lazyload fade-up" src="" data-src="{{ item['data']['food_img'] }}" alt=""></a>
+                    </div>
+                    <div class="cart-table-prd-content-wrap">
+                        <div class="cart-table-prd-info">
+                            <div class="cart-table-prd-price">
+                                <div class="price-new">{{ item['data']['price'] }}</div>
+                            </div>
+                            <h2 class="cart-table-prd-name"><a href="#">{{ item['data']['food_name'] }}</a></h2>
+                        </div>
+                        <div class="cart-table-prd-qty">
+                            <div class="qty qty-changer">
+                                <button class="decrease"></button>
+                                <input type="text" class="qty-input" value="{{ item['data']['quantity'] }}" id="{{ item['data']['food_id'] }}" data-min="0" data-max="1000">
+                                <button class="increase"></button>
+                            </div>
+                        </div>
+                        <div class="cart-table-prd-price-total total-price">
+                            ₹ {{ item['data']['price']*item['data']['quantity'] }}
+                        </div>
+                    </div>
+                    <div class="cart-table-prd-action">
+                        <a href="#" class="cart-table-prd-remove" data-tooltip="Remove Product"><i class="icon-recycle"></i></a>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+		<div class="text-center mt-1">
+            <button class="btn btn--grey order-btn">Order Now</button>&emsp;
+            <button class="btn btn--grey add-cart-btn">Add to cart</button>
+        </div>
+
+{% endblock content %}
+
+{% block scripts %}
+
+<script>
+    var food_items = JSON.parse(window.localStorage.getItem('cart'));
+
+    var old_orders = JSON.parse(window.localStorage.getItem('ordered'));
+
+    $(document).ready(function(){
+        var total = "{{ order['order_data']['total'] }}";
+        var item_counts = 0;
+
+        var cur_items = JSON.parse('{{ order["order_data"] | to_string | safe}}')
+
+        var fid = Math.floor(100000 + Math.random() * 900000);
+
+        var fields = $(".qty-input")
+        for(i=0; i<fields.length;i++){
+            item_counts = item_counts+parseInt(fields[i].value);
+        }
+
+        $(".order-btn").on('click', function(){
+            Swal.fire({
+                title: 'Order Now?',
+                text: `Ordering ${item_counts} items worth ₹ ${total}.`,
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Lets, do it.'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    Swal.fire(
+                    'Order Placed',
+                    'Your order has been placed. We will let you know when chef starts preparing your order.',
+                    'success'
+                    );
+                    cur_items.ordered_on = new Date().toLocaleDateString('in').replaceAll('/','.');
+                    cur_items.order_status = 'ordered';
+                    cur_items.order_id = fid
+                    cur_items.total = total;
+                    old_orders.data.push(cur_items);
+                    window.localStorage.setItem('ordered', JSON.stringify(old_orders));
+                    
+                    socket.emit('update', cur_items);
+                }
+            })
+        })
+
+        $(".add-cart-btn").on('click', function(){
+            // add functionalities
+        })
+    })
+
+    // when cook accepts order update the user.
+    socket.on('order update', function(msg){
+        const audio_path = '{{ url_for("static", filename="sounds/order_received.wav") }}';
+        Swal.fire({
+            title: 'Order accepted',
+            text: 'Your order #123 is being prepared. Please wait',
+            icon: 'success',
+            didOpen: function () {
+                const audio = new Audio(audio_path);
+                audio.autoplay = true;
+                audio.play();
+            }
+        })
+    })
+
+</script>
+</html>
+{% endblock scripts %}

@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1">
+	<meta name="description" content="">
+	<meta name="author" content="">
+	<title>Table registration</title>
+	<link rel="shortcut icon" type="image/x-icon" href="{{ url_for('static', filename='images/favicon.ico') }}" />
+
+	<link href="{{ url_for('static', filename='css/vendor/bootstrap.min.css') }}" rel="stylesheet">
+
+	<link href="{{ url_for('static', filename='css/style.css') }}" rel="stylesheet">
+
+	<link href="{{ url_for('static', filename='fonts/icomoon/icons.css') }}" rel="stylesheet">
+	<link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,300;1,400;1,500;1,600;1,700;1,800&display=swap" rel="stylesheet">
+	<link href="https://fonts.googleapis.com/css2?family=Open%20Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
+    <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="{{ url_for('static', filename='js/jquery.js') }}"></script>
+</head>
+<body class="has-smround-btns has-loader-bg equal-height has-sm-container">
+
+<header class="hdr-wrap">
+
+	<div class="holder">
+		<div class="container">
+			<div class="row justify-content-center">
+				<div class="col-md-18 col-lg-12">
+					<h2 class="text-center">Before You Order...</h2>
+					<div class="form-wrapper">
+						<p>To access your past orders, and to take advantage of our loyalty programme, fill the form below.</p>
+						
+							<div class="row">
+								<div class="col-sm-9">
+									<div class="form-group">
+										<input type="text" class="form-control" placeholder="First name" id="fname" required>
+									</div>
+								</div>
+								<div class="col-sm-9">
+									<div class="form-group">
+										<input type="text" class="form-control" placeholder="Last name" id="lname" required>
+									</div>
+								</div>
+							</div>
+							<div class="form-group">
+								<input type="text" class="form-control" placeholder="E-mail (Optional)" id="email">
+							</div>
+							<div class="form-group">
+								<input type="text" class="form-control" placeholder="Phone" id="phone" required>
+							</div>
+							<div class="form-group">
+								<input type="text" class="form-control" placeholder="Table id" id="table-id" readonly>
+							</div>
+							<div class="text-center">
+								<button class="btn start-btn">Start Ordering</button>
+							</div>
+						
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</body>
+
+<script>
+    window.localStorage.clear();
+
+    window.localStorage.setItem('cart', JSON.stringify({"cart_items":[], "table_id":null, "order_id":null, "ordered_on": null, "order_status":null, "total":null, "identifier": null}));
+
+	window.localStorage.setItem('ordered', JSON.stringify({"data":[]}));
+
+	Swal.fire("Note: we use your phone number to store your orders data.")
+
+	$("#fname").keyup(function() {
+		$("#table-id").val('Table ID is "'+$("#fname").val() +"#"+window.location.pathname.split('/')[2]+'"');
+	})
+
+    $(".start-btn").on('click', function(){
+        var fname = $("#fname").val();
+        var lname = $("#lname").val();
+        var email = $("#email").val();
+        var phone = $("#phone").val();
+
+        if (fname == null || fname == '' || lname == null || lname == '' || phone == null || phone == ''){
+            Swal.fire({
+                icon: 'error',
+                title: 'Missing Data',
+                text: 'please fill the form...',
+            })
+        } else{
+            var table_id = fname+'#'+window.location.pathname.split('/')[2];
+            var userdata = {
+                fname:fname,
+                lname:lname,
+                email:email,
+                phone:phone,
+                table_id:table_id
+            };
+            window.localStorage.setItem('table_id', table_id);
+
+            $.ajax({
+                type: 'POST',
+                url: "{{ url_for('user.create_table') }}",
+                contentType: 'application/json',
+                data: JSON.stringify(userdata),
+                dataType: "json",
+                success: function(result){
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Thank you...',
+                        showConfirmButton: true,
+                    });
+                    window.location = "{{ url_for('user.index') }}";
+					window.localStorage.setItem('identifier', phone);
+                }
+            });
+        }
+    })
+</script>
+</html>
